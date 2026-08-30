@@ -1,11 +1,12 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Real-Time Data Engineering Pipeline"
+    PROJECT_NAME: str = "Real-Time Pipeline API"
     API_V1_STR: str = "/api/v1"
-    DATABASE_URL: str = "sqlite:///./data/pipeline.db"  # Defaults to local SQLite for zero-config testing, easily switchable to PostgreSQL
+    DATABASE_URL: str = "sqlite:///./data/pipeline.db"
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
 
 settings = Settings()

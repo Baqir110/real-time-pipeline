@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from datetime import datetime
 from app.models.database import SessionLocal, PipelineMetric, init_db
+from datetime import datetime, timezone
 
 def run_etl_pipeline():
     # Ensure tables exist
@@ -43,7 +44,7 @@ def run_etl_pipeline():
 
     return {
         "status": "success",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "records_processed": total_records,
         "unique_domains": active_domains_count
     }

@@ -2,6 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.models.database import SessionLocal, PipelineMetric
 from app.etl.pipeline import run_etl_pipeline
+from app.models.database import SessionLocal
+# app/api/endpoints.py
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.models.database import SessionLocal, PipelineMetric, get_db
 
 router = APIRouter()
 
