@@ -31,7 +31,7 @@ try:
         metrics_data = res.json().get("data", [])
         if metrics_data:
             df = pd.DataFrame(metrics_data)
-            
+
             with col1:
                 st.metric(label="Total Metrics Logged", value=len(df))
                 st.subheader("Raw Metrics")
@@ -41,8 +41,12 @@ try:
                 st.subheader("Metric Values Over Time")
                 st.line_chart(df.set_index("id")["value"])
         else:
-            st.info("No metrics logged yet. Click 'Trigger ETL Cycle' on the left to run the pipeline.")
+            st.info(
+                "No metrics logged yet. Click 'Trigger ETL Cycle' on the left to run the pipeline."
+            )
     else:
         st.error("Failed to retrieve metrics from FastAPI.")
 except Exception as e:
-    st.error(f"FastAPI server is offline: {e}. Please ensure Uvicorn is running on port 8000.")
+    st.error(
+        f"FastAPI server is offline: {e}. Please ensure Uvicorn is running on port 8000."
+    )

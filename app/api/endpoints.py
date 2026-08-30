@@ -21,7 +21,7 @@ def get_pipeline_metrics(
     status: Optional[str] = None,
     from_date: Optional[datetime] = None,
     to_date: Optional[datetime] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Retrieves all aggregated analytical metrics stored by the pipeline."""
     query = db.query(PipelineMetric)
