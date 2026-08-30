@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from app.config import settings
@@ -19,10 +19,6 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-
-from datetime import datetime, timezone
-from sqlalchemy import Column, DateTime, Float, Integer, String
-from app.models.database import Base
 
 class PipelineMetric(Base):
     __tablename__ = "pipeline_metrics"

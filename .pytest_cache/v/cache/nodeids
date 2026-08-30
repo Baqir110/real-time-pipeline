@@ -1,5 +1,0 @@
-[
-  "tests/test_api.py::test_get_metrics",
-  "tests/test_api.py::test_root",
-  "tests/test_api.py::test_trigger_etl"
-]
