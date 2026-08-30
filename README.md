@@ -1,4 +1,5 @@
 # Real-Time Data Engineering Pipeline
+🚀 **Live Demos:** [Streamlit Dashboard](https://real-time-pipeline-dashboard-ihfj.onrender.com) | [FastAPI Interactive Swagger Docs](https://real-time-pipeline-dashboard.onrender.com/docs)
 
 [![CI Pipeline](https://github.com/Baqir110/real-time-pipeline/actions/workflows/ci.yml/badge.svg)](https://github.com/Baqir110/real-time-pipeline/actions)
 [![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
@@ -6,8 +7,6 @@
 [![Docker Support](https://img.shields.io/badge/docker-supported-blue?logo=docker)](https://www.docker.com/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
-
-🚀 **Live Demos:** [Streamlit Dashboard](https://real-time-pipeline-dashboard.onrender.com) | [FastAPI Interactive Swagger Docs](https://real-time-pipeline-api.onrender.com/docs)
 
 ---
 ![Streamlit Dashboard](docs/assets/streamlit_dashboard.png)
