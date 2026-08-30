@@ -3,3 +3,9 @@
 data/
 *.db
 .pytest_cache/
+
+# Testing coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
