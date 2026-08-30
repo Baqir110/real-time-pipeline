@@ -4,4 +4,5 @@ pytest-asyncio>=0.23.0
 pytest-cov>=4.1.0
 black>=23.0.0
 isort>=5.0.0
-flake8>=6.0.0locust>=2.20.0
+flake8>=6.0.0
+locust>=2.20.0
