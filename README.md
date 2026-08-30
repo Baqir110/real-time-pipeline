@@ -7,9 +7,8 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
-# Real-Time Data Engineering Pipeline
-
 🚀 **Live Demos:** [Streamlit Dashboard](https://real-time-pipeline-dashboard.onrender.com) | [FastAPI Interactive Swagger Docs](https://real-time-pipeline-api.onrender.com/docs)
+
 ---
 ![Streamlit Dashboard](docs/assets/streamlit_dashboard.png)
 ---
