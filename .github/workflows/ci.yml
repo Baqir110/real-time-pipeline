@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: 'pip'  # Speeds up CI runs by caching pip packages
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
@@ -27,5 +27,7 @@ jobs:
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
       - name: Run Test Suite with Coverage
+        env:
+          PYTHONPATH: .
         run: |
           pytest -v --cov=app --cov-report=term-missing
