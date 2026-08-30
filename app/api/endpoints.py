@@ -3,15 +3,15 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.models.database import PipelineMetric, get_db
-from app.etl.pipeline import run_etl_pipeline
+from app.etl.pipeline import run_etl_pipeline_async
 
 router = APIRouter()
 
 
 @router.post("/trigger-etl")
-def trigger_pipeline():
-    """Triggers the real-time ingestion, validation, and loading ETL pipeline."""
-    result = run_etl_pipeline()
+async def trigger_pipeline(db: Session = Depends(get_db)):
+    """Triggers the real-time ingestion, validation, and loading ETL pipeline asynchronously."""
+    result = await run_etl_pipeline_async(db)
     return result
 
 

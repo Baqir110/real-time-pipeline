@@ -1,63 +1,89 @@
-import requests
+import logging
+import httpx
 import pandas as pd
-from datetime import datetime
-from app.models.database import SessionLocal, PipelineMetric, init_db
 from datetime import datetime, timezone
+from typing import List
+from pydantic import BaseModel, EmailStr
+from sqlalchemy.orm import Session
+from app.models.database import PipelineMetric, init_db
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
-def run_etl_pipeline():
-    # Ensure tables exist
-    init_db()
+# --- Pydantic Data Contract ---
+class RawUserPayload(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    username: str
 
-    # 1. Ingestion: Fetch data from a public placeholder API (e.g., JSONPlaceholder Users)
-    try:
-        response = requests.get(
-            "https://jsonplaceholder.typicode.com/users", timeout=10
-        )
+
+class ETLResult(BaseModel):
+    status: str
+    timestamp: str
+    records_processed: int
+    unique_domains: int
+    execution_time_ms: float
+
+
+async def fetch_external_data_async(url: str, timeout: float = 10.0) -> List[dict]:
+    """Fetches payload asynchronously with strict timeout handling."""
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        response = await client.get(url)
         response.raise_for_status()
-        raw_data = response.json()
-    except Exception as e:
-        print(f"Ingestion failed: {e}")
-        return {"status": "error", "message": str(e)}
+        return response.json()
 
-    # 2. Validation & Transformation via Pandas
-    df = pd.DataFrame(raw_data)
 
-    # Simple transformation: Count records, extract domains from emails, check status
-    total_records = len(df)
-    df["email_domain"] = df["email"].apply(
-        lambda x: x.split("@")[-1] if "@" in x else "unknown"
-    )
-    active_domains_count = df["email_domain"].nunique()
+async def run_etl_pipeline_async(db: Session) -> dict:
+    """Executes asynchronous ingestion, schema validation, transformation, and load."""
+    init_db()
+    start_time = datetime.now(timezone.utc)
 
-    # 3. Load / Persistence into database
-    db = SessionLocal()
+    # 1. Ingestion
     try:
-        # Save metrics
-        metric_1 = PipelineMetric(
-            metric_name="total_records_ingested",
-            value=float(total_records),
-            status="SUCCESS",
-        )
-        metric_2 = PipelineMetric(
-            metric_name="unique_email_domains",
-            value=float(active_domains_count),
-            status="SUCCESS",
-        )
-
-        db.add(metric_1)
-        db.add(metric_2)
-        db.commit()
+        raw_json = await fetch_external_data_async("https://jsonplaceholder.typicode.com/users")
+        logger.info(f"Ingested {len(raw_json)} raw records from external source.")
     except Exception as e:
-        db.rollback()
-        print(f"Database load failed: {e}")
-        return {"status": "error", "message": str(e)}
-    finally:
-        db.close()
+        logger.error(f"Ingestion failure: {str(e)}")
+        return {"status": "error", "message": f"Ingestion failed: {str(e)}"}
 
-    return {
-        "status": "success",
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "records_processed": total_records,
-        "unique_domains": active_domains_count,
-    }
+    # 2. Validation via Pydantic Data Contracts
+    validated_records = []
+    for record in raw_json:
+        try:
+            validated_records.append(RawUserPayload(**record).model_dump())
+        except Exception as val_err:
+            logger.warning(f"Dropping invalid payload record: {val_err}")
+
+    if not validated_records:
+        return {"status": "error", "message": "No records passed validation contract."}
+
+    # 3. Transformation via Pandas
+    df = pd.DataFrame(validated_records)
+    total_records = len(df)
+    df["email_domain"] = df["email"].apply(lambda x: str(x).split("@")[-1].lower() if "@" in str(x) else "unknown")
+    unique_domains = int(df["email_domain"].nunique())
+
+    # 4. Load / Persistence
+    try:
+        m1 = PipelineMetric(metric_name="total_records_ingested", value=float(total_records), status="SUCCESS")
+        m2 = PipelineMetric(metric_name="unique_email_domains", value=float(unique_domains), status="SUCCESS")
+
+        db.add_all([m1, m2])
+        db.commit()
+        logger.info("Successfully persisted ETL metrics to database.")
+    except Exception as db_err:
+        db.rollback()
+        logger.error(f"Database insertion error: {db_err}")
+        return {"status": "error", "message": str(db_err)}
+
+    execution_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+
+    return ETLResult(
+        status="success",
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        records_processed=total_records,
+        unique_domains=unique_domains,
+        execution_time_ms=round(execution_time, 2)
+    ).model_dump()
