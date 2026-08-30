@@ -1,12 +1,16 @@
-import streamlit as st
+import os
 import pandas as pd
 import requests
+import streamlit as st
 
 st.set_page_config(page_title="Data Pipeline Analytics", layout="wide")
 st.title("📊 Real-Time Data Pipeline Analytics")
 
-# FastAPI endpoint URLs
-API_BASE_URL = "http://127.0.0.1:8000/api/v1"
+# Dynamically pick up the Render URL, fallback to localhost for offline dev
+BASE_URL = os.getenv(
+    "API_URL", "https://real-time-pipeline-dashboard.onrender.com"
+).rstrip("/")
+API_BASE_URL = f"{BASE_URL}/api/v1"
 
 st.sidebar.header("Controls")
 
@@ -48,5 +52,5 @@ try:
         st.error("Failed to retrieve metrics from FastAPI.")
 except Exception as e:
     st.error(
-        f"FastAPI server is offline: {e}. Please ensure Uvicorn is running on port 8000."
+        f"FastAPI server is offline: {e}. Please ensure Uvicorn is running on the backend."
     )
