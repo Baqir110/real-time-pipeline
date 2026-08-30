@@ -7,6 +7,9 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
+# Real-Time Data Engineering Pipeline
+
+🚀 **Live Demos:** [Streamlit Dashboard](https://real-time-pipeline-dashboard.onrender.com) | [FastAPI Interactive Swagger Docs](https://real-time-pipeline-api.onrender.com/docs)
 ---
 ![Streamlit Dashboard](docs/assets/streamlit_dashboard.png)
 ---
@@ -235,7 +238,18 @@ Generate coverage report:
 python -m pytest --cov=app --cov-report=term-missing
 
 ```
+## 💡 Why I Built This
 
+Data engineering pipelines frequently fail in production due to unexpected schema drift, thread pool bottlenecks under heavy load, or silent data corruption. I built this architecture to demonstrate a production-ready fix:
+
+* **Async Data Ingestion (`httpx` + `asyncio`):** Non-blocking concurrency prevents worker starvation during continuous batch runs.
+* **Schema Contracts (`Pydantic v2`):** Validates raw payloads strictly before database insertion.
+* **Schema Evolution (`Alembic`):** Ensures database migrations are fully version-controlled and reproducible.
+* **Query Caching (`Redis`):** Reduces backend query load for analytics dashboards.
+
+### Trade-offs & Future Improvements
+* **Trade-off:** Used REST-based polling over WebSockets for straightforward cloud deployment and lower resource usage.
+* **Next Steps:** Integrate Apache Kafka for real-time event streaming and add Great Expectations for automated statistical data testing.
 ---
 
 ## Author
