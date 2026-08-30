@@ -8,6 +8,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 
 ---
+![Streamlit Dashboard](docs/assets/streamlit_dashboard.png)
+---
 
 ## Overview
 
